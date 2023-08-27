@@ -1,14 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-// import Menu from './App.jsx'
 // import Login from './Login'
-// import SignUp from './SignUp'
-import TodoList from './LodoList'
+import SignUp from './SignUp'
+// import TodoList from './TodoList'
 import './index.css'
-// import './style/login.scss'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <TodoList />
+    <SignUp />
   </React.StrictMode>,
 )
