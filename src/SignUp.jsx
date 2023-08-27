@@ -43,10 +43,10 @@ const SignUp = () => {
         // setNickname("");
       } catch (error) {
         Swal.fire(
-            '註冊失敗',
-            error.response.data.message,
-            'error'
-          )
+          '註冊失敗',
+          error.response.data.message,
+          'error'
+        )
       }
     };
 
@@ -54,8 +54,8 @@ const SignUp = () => {
     <div id="signUpPage" className="bg-yellow">
     <div className="container signUpPage vhContainer">
         <div className="side">
-            <a href="#"><img className="logoImg" src="../public/logo_lg.png" alt="logo"/></a>
-            <img className="d-m-n" src="../public/img.png" alt="workImg"/>
+            <a href="#"><img className="logoImg" src="/logo_lg.png" alt="logo"/></a>
+            <img className="d-m-n" src="/img.png" alt="workImg"/>
         </div>
         <div>
             <form className="formControls" action="index.html">
