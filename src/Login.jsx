@@ -8,8 +8,8 @@ const { VITE_APP_HOST } = import.meta.env;
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [msg, setMsg] = useState('');
-  const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const handleLogin = async () => {
     if (!email || !password) {
       Swal.fire('資料錯誤', '請填寫正確的登入資訊');
@@ -20,19 +20,18 @@ const Login = () => {
       email: email,
       password: password,
     };
-
+    setIsLoading(true);
     try {
       const res = await axios.post(`${VITE_APP_HOST}/users/sign_in`, loginData);
-      const { data } = await res
+      const { data } = await res;
       document.cookie = `token=${data.token}; SameSite=None; Secure`;
-      Swal.fire(
-        '登入成功',
-        '即將進入待辦清單'
-      ).then(() => {
-        navigate('/todo')
-      })
+      Swal.fire('登入成功', '即將進入待辦清單').then(() => {
+        setIsLoading(false);
+        navigate('/todo');
+      });
     } catch (error) {
       Swal.fire('登入失敗', error.response.data.message);
+      setIsLoading(false);
     }
   };
 
@@ -71,9 +70,12 @@ const Login = () => {
           className="formControls_btnSubmit"
           type="button"
           value="登入"
+          disabled={isLoading}
           onClick={handleLogin}
         />
-        <NavLink to="/sign_up" className="formControls_btnLink">註冊帳號</NavLink>
+        <NavLink to="/sign_up" className="formControls_btnLink">
+          註冊帳號
+        </NavLink>
       </form>
     </div>
   );

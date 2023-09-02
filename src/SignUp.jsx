@@ -5,14 +5,13 @@ import Swal from 'sweetalert2';
 import { NavLink } from 'react-router-dom';
 const { VITE_APP_HOST } = import.meta.env;
 
-
 const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
   const [nickname, setNickname] = useState('');
-  const [msg, setMsg] = useState('');
-  const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSignUp = async () => {
     if (!email || !password || !nickname) {
@@ -28,17 +27,19 @@ const SignUp = () => {
       password,
       nickname,
     };
-    
+    setIsLoading(true);
     try {
-      const res = await axios.post(`${VITE_APP_HOST}/users/sign_up`, signUpData);
-      Swal.fire(
-        '註冊成功',
-        '即將前往登入頁'
-      ).then(() => {
-        navigate('/')
-        })
+      const res = await axios.post(
+        `${VITE_APP_HOST}/users/sign_up`,
+        signUpData
+      );
+      Swal.fire('註冊成功', '即將前往登入頁').then(() => {
+        setIsLoading(false);
+        navigate('/');
+      });
     } catch (error) {
       Swal.fire('註冊失敗', error.response.data.message);
+      setIsLoading(false);
     }
   };
 
@@ -101,9 +102,12 @@ const SignUp = () => {
           className="formControls_btnSubmit"
           type="button"
           value="註冊帳號"
+          disabled={isLoading}
           onClick={handleSignUp}
         />
-        <NavLink to="/" className="formControls_btnLink">登入</NavLink>
+        <NavLink to="/" className="formControls_btnLink">
+          登入
+        </NavLink>
       </form>
     </div>
   );

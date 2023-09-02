@@ -4,20 +4,27 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 const { VITE_APP_HOST } = import.meta.env;
 
-
 const TodoList = () => {
   const [nickname, setNickName] = useState('');
   const [todos, setTodos] = useState([]);
+  const [filterTodos, setfilterTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
+  const [finish, setFinish] = useState(0);
+  const [tabStatus, setTabStatus] = useState('all')
   const token = document.cookie
-  .split("; ")
-  .find((row) => row.startsWith("token="))
-  ?.split("=")[1];
+    .split('; ')
+    .find((row) => row.startsWith('token='))
+    ?.split('=')[1];
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    const finishItem = todos.filter((i) => i.status === true)
+    setFinish(finishItem.length)
+  }, [todos]);
 
   const checkAuth = async () => {
     try {
@@ -26,17 +33,14 @@ const TodoList = () => {
           Authorization: token,
         },
       });
-      setNickName(res.data.nickname)
+      setNickName(res.data.nickname);
       getTodos();
     } catch (error) {
-      Swal.fire(
-        '驗證失敗',
-        '請重新登入'
-      ).then(() => {
-        navigate('/')
-      })
+      Swal.fire('驗證失敗', '請重新登入').then(() => {
+        navigate('/');
+      });
     }
-  }
+  };
 
   const getTodos = async () => {
     try {
@@ -50,9 +54,10 @@ const TodoList = () => {
       console.log(error.response);
     }
   };
+
   const addTodo = async () => {
     if (!newTodo) {
-			Swal.fire('新增失敗', '請輸入代辦', 'warning');
+      Swal.fire('新增失敗', '請輸入代辦', 'warning');
       return;
     }
     try {
@@ -73,7 +78,8 @@ const TodoList = () => {
       console.log(error.response.data.message);
     }
   };
-  const completeTodo = async (id) => {
+
+  const finishTodo = async (id) => {
     try {
       const res = await axios.patch(
         `${VITE_APP_HOST}/todos/${id}/toggle`,
@@ -89,6 +95,7 @@ const TodoList = () => {
       console.log(error.response.data.message);
     }
   };
+
   const deleteTodo = async (id) => {
     try {
       const res = await axios.delete(`${VITE_APP_HOST}/todos/${id}`, {
@@ -101,6 +108,32 @@ const TodoList = () => {
       console.log(error.response.data.message);
     }
   };
+
+  const clearFinishItem = async () => {
+    console.log(tabStatus)
+    todos.filter((i) => {
+      if(i.status) {
+        deleteTodo(i.id)
+      }
+    })
+  }
+
+  const showAll = () => {
+    setfilterTodos(todos)
+    setTabStatus('all')
+  }
+
+  const showNotFinish = () => {
+    const notFinish = todos.filter((i)=> i.status === false)
+    setfilterTodos(notFinish)
+    setTabStatus('notFinish')
+  }
+
+  const showFinish = () => {
+    const finish = todos.filter((i)=> i.status === true)
+    setfilterTodos(finish)
+    setTabStatus('finish')
+  }
 
   return (
     <div id="todoListPage" className="bg-half">
@@ -128,47 +161,87 @@ const TodoList = () => {
               value={newTodo}
               onChange={(e) => setNewTodo(e.target.value)}
             />
-            <a href="#" className="p-0" onClick={addTodo}>
-						<img src="/plus.png" alt="plus" />
+            <a
+              href="#"
+              className="p-0"
+              onClick={(e) => {
+                e.preventDefault();
+                addTodo();
+              }}
+            >
+              <img src="/plus.png" alt="plus" />
             </a>
           </div>
           <div className="todoList_list">
             <ul className="todoList_tab">
               <li>
-                <a href="#" className="active">
+                <a href="#" className={tabStatus === 'all' ? 'active' : ''}
+                 onClick={(e) => {
+                  e.preventDefault();
+                  showAll()
+                }}
+                >
                   全部
                 </a>
               </li>
               <li>
-                <a href="#">待完成</a>
+                <a
+                  href="#"
+                  className={tabStatus  === 'notFinish'? 'active' : ''}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    showNotFinish(e)
+                  }}
+                >
+                  待完成
+                </a>
               </li>
               <li>
-                <a href="#">已完成</a>
+                <a
+                  href="#"
+                  className={tabStatus === 'finish'? 'active' : ''}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    showFinish()
+                  }}
+                >
+                  已完成
+                </a>
               </li>
             </ul>
             <div className="todoList_items">
               <ul className="todoList_item">
-                {todos.map((todo) => {
+                {filterTodos.map((todo) => {
                   return (
                     <li key={todo.id}>
                       <label className="todoList_label">
                         <input
                           className="todoList_input"
                           type="checkbox"
-                          value={todo.status}
+                          checked={todo.status}
+                          onChange={() => finishTodo(todo.id)}
                         />
                         <span>{todo.content}</span>
                       </label>
-                      <a href="#" onClick={()=> deleteTodo(todo.id)}>
-												<img src="/delete.jpg" alt="delete" />
+                      <a
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          deleteTodo(todo.id);
+                        }}
+                      >
+                        <img src="/delete.jpg" alt="delete" />
                       </a>
                     </li>
                   );
                 })}
               </ul>
               <div className="todoList_statistics">
-                <p> 5個已完成項目</p>
-                <a href="#">清除已完成項目</a>
+                <p> {finish}個已完成項目</p>
+                <a href="#" onClick={(e)=> {
+                  e.preventDefault()
+                  clearFinishItem()
+                }}>清除已完成項目</a>
               </div>
             </div>
           </div>
