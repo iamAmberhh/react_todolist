@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { NavLink } from 'react-router-dom';
 const apiUrl = 'https://todolist-api.hexschool.io';
 
 const Login = () => {
@@ -33,56 +34,44 @@ const Login = () => {
   };
 
   return (
-    <div id="loginPage" className="bg-yellow">
-      <div className="container loginPage vhContainer ">
-        <div className="side">
-          <a href="#">
-            <img className="logoImg" src="/logo_lg.png" alt="logo" />
-          </a>
-          <img className="d-m-n" src="/img.png" alt="workImg" />
-        </div>
-        <div>
-          <form className="formControls" action="index.html">
-            <h2 className="formControls_txt">最實用的線上代辦事項服務</h2>
-            <label className="formControls_label" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="formControls_input"
-              type="text"
-              id="email"
-              name="email"
-              placeholder="請輸入 email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <span>此欄位不可留空</span>
-            <label className="formControls_label" htmlFor="pwd">
-              密碼
-            </label>
-            <input
-              className="formControls_input"
-              type="password"
-              name="pwd"
-              id="pwd"
-              placeholder="請輸入密碼"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <input
-              className="formControls_btnSubmit"
-              type="button"
-              value="登入"
-              onClick={handleLogin}
-            />
-            <a className="formControls_btnLink" href="#signUpPage">
-              註冊帳號
-            </a>
-          </form>
-        </div>
-      </div>
+    <div>
+      <form className="formControls" action="index.html">
+        <h2 className="formControls_txt">最實用的線上代辦事項服務</h2>
+        <label className="formControls_label" htmlFor="email">
+          Email
+        </label>
+        <input
+          className="formControls_input"
+          type="text"
+          id="email"
+          name="email"
+          placeholder="請輸入 email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <span>此欄位不可留空</span>
+        <label className="formControls_label" htmlFor="pwd">
+          密碼
+        </label>
+        <input
+          className="formControls_input"
+          type="password"
+          name="pwd"
+          id="pwd"
+          placeholder="請輸入密碼"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <input
+          className="formControls_btnSubmit"
+          type="button"
+          value="登入"
+          onClick={handleLogin}
+        />
+        <NavLink to="/sign_up" className="formControls_btnLink">註冊帳號</NavLink>
+      </form>
     </div>
   );
 };
