@@ -1,20 +1,46 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-const apiUrl = 'https://todolist-api.hexschool.io';
-const token = '';
+const { VITE_APP_HOST } = import.meta.env;
+
 
 const TodoList = () => {
+  const [nickname, setNickName] = useState('');
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
+  const token = document.cookie
+  .split("; ")
+  .find((row) => row.startsWith("token="))
+  ?.split("=")[1];
 
+  const navigate = useNavigate()
   useEffect(() => {
-    getTodos();
-  }, [token]);
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const res = await axios.get(`${VITE_APP_HOST}/users/checkout`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      setNickName(res.data.nickname)
+      getTodos();
+    } catch (error) {
+      Swal.fire(
+        '驗證失敗',
+        '請重新登入'
+      ).then(() => {
+        navigate('/')
+      })
+    }
+  }
 
   const getTodos = async () => {
     try {
-      const res = await axios.get(`${apiUrl}/todos`, {
+      const res = await axios.get(`${VITE_APP_HOST}/todos`, {
         headers: {
           Authorization: token,
         },
@@ -31,7 +57,7 @@ const TodoList = () => {
     }
     try {
       const res = await axios.post(
-        `${apiUrl}/todos`,
+        `${VITE_APP_HOST}/todos`,
         {
           content: newTodo,
         },
@@ -50,7 +76,7 @@ const TodoList = () => {
   const completeTodo = async (id) => {
     try {
       const res = await axios.patch(
-        `${apiUrl}/todos/${id}/toggle`,
+        `${VITE_APP_HOST}/todos/${id}/toggle`,
         {},
         {
           headers: {
@@ -65,7 +91,7 @@ const TodoList = () => {
   };
   const deleteTodo = async (id) => {
     try {
-      const res = await axios.delete(`${apiUrl}/todos/${id}`, {
+      const res = await axios.delete(`${VITE_APP_HOST}/todos/${id}`, {
         headers: {
           Authorization: token,
         },
@@ -85,7 +111,7 @@ const TodoList = () => {
         <ul>
           <li className="todo_sm">
             <a href="#">
-              <span>王小明的代辦</span>
+              <span>{nickname}的代辦</span>
             </a>
           </li>
           <li>

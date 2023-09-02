@@ -1,17 +1,18 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { NavLink } from 'react-router-dom';
-const apiUrl = 'https://todolist-api.hexschool.io';
+const { VITE_APP_HOST } = import.meta.env;
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [msg, setMsg] = useState('');
-
+  const navigate = useNavigate()
   const handleLogin = async () => {
     if (!email || !password) {
-      Swal.fire('資料錯誤', '請填寫正確的登入資訊', 'warning');
+      Swal.fire('資料錯誤', '請填寫正確的登入資訊');
       return;
     }
 
@@ -21,15 +22,17 @@ const Login = () => {
     };
 
     try {
-      const res = await axios.post(`${apiUrl}/users/sign_in`, loginData);
-      Swal.fire('登入成功', 'res.data.token', 'success');
-      // setToken(res.data.token);
-      // setMsg();
-      // setEmail("");
-      // setPassword("");
+      const res = await axios.post(`${VITE_APP_HOST}/users/sign_in`, loginData);
+      const { data } = await res
+      document.cookie = `token=${data.token}; SameSite=None; Secure`;
+      Swal.fire(
+        '登入成功',
+        '即將進入待辦清單'
+      ).then(() => {
+        navigate('/todo')
+      })
     } catch (error) {
-      // setMsg(error.response.data.message);
-      Swal.fire('登入失敗', error.response.data.message, 'error');
+      Swal.fire('登入失敗', error.response.data.message);
     }
   };
 

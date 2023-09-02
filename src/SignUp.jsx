@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { NavLink } from 'react-router-dom';
-const apiUrl = 'https://todolist-api.hexschool.io';
+const { VITE_APP_HOST } = import.meta.env;
+
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -10,14 +12,15 @@ const SignUp = () => {
   const [passwordCheck, setPasswordCheck] = useState('');
   const [nickname, setNickname] = useState('');
   const [msg, setMsg] = useState('');
+  const navigate = useNavigate()
 
   const handleSignUp = async () => {
     if (!email || !password || !nickname) {
-      Swal.fire('資料錯誤', '請填寫正確的註冊資訊', 'warning');
+      Swal.fire('資料錯誤', '請填寫正確的註冊資訊');
       return;
     }
     if (password !== passwordCheck) {
-      Swal.fire('資料錯誤', '密碼與確認密碼不同', 'warning');
+      Swal.fire('資料錯誤', '密碼與確認密碼不同');
       return;
     }
     const signUpData = {
@@ -25,16 +28,17 @@ const SignUp = () => {
       password,
       nickname,
     };
+    
     try {
-      const res = await axios.post(`${apiUrl}/users/sign_up`, signUpData);
-      console.log(res);
-      // setMsg(res.data.uid);
-      // setEmail("");
-      // setPassword("");
-      // setPasswordCheck("");
-      // setNickname("");
+      const res = await axios.post(`${VITE_APP_HOST}/users/sign_up`, signUpData);
+      Swal.fire(
+        '註冊成功',
+        '即將前往登入頁'
+      ).then(() => {
+        navigate('/')
+        })
     } catch (error) {
-      Swal.fire('註冊失敗', error.response.data.message, 'error');
+      Swal.fire('註冊失敗', error.response.data.message);
     }
   };
 
@@ -99,7 +103,7 @@ const SignUp = () => {
           value="註冊帳號"
           onClick={handleSignUp}
         />
-        <NavLink to="/login" className="formControls_btnLink">登入</NavLink>
+        <NavLink to="/" className="formControls_btnLink">登入</NavLink>
       </form>
     </div>
   );
