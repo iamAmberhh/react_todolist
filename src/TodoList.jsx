@@ -7,7 +7,7 @@ const { VITE_APP_HOST } = import.meta.env;
 const TodoList = () => {
   const [nickname, setNickName] = useState('');
   const [todos, setTodos] = useState([]);
-  const [filterTodos, setfilterTodos] = useState([]);
+  const [filterTodos, setFilterTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
   const [finish, setFinish] = useState(0);
   const [tabStatus, setTabStatus] = useState('all')
@@ -25,6 +25,18 @@ const TodoList = () => {
     const finishItem = todos.filter((i) => i.status === true)
     setFinish(finishItem.length)
   }, [todos]);
+
+  useEffect(() => {
+    if(tabStatus === 'all'){
+      setFilterTodos(todos)
+    } else if (tabStatus === 'notFinish'){
+      const notFinish = todos.filter((i)=> i.status === false)
+        setFilterTodos(notFinish)
+    } else if (tabStatus === 'finish'){
+      const finish = todos.filter((i)=> i.status === true)
+        setFilterTodos(finish)
+    }
+  }, [tabStatus,todos]);
 
   const checkAuth = async () => {
     try {
@@ -51,7 +63,7 @@ const TodoList = () => {
       });
       setTodos(res.data.data);
     } catch (error) {
-      console.log(error.response);
+      Swal.fire('失敗', error.response.data.message);
     }
   };
 
@@ -74,8 +86,9 @@ const TodoList = () => {
       );
       setNewTodo('');
       getTodos();
+      setTabStatus('all')
     } catch (error) {
-      console.log(error.response.data.message);
+      Swal.fire('失敗', error.response.data.message);
     }
   };
 
@@ -92,7 +105,7 @@ const TodoList = () => {
       );
       getTodos();
     } catch (error) {
-      console.log(error.response.data.message);
+      Swal.fire('失敗', error.response.data.message);
     }
   };
 
@@ -105,12 +118,11 @@ const TodoList = () => {
       });
       getTodos();
     } catch (error) {
-      console.log(error.response.data.message);
+      Swal.fire('失敗', error.response.data.message);
     }
   };
 
   const clearFinishItem = async () => {
-    console.log(tabStatus)
     todos.filter((i) => {
       if(i.status) {
         deleteTodo(i.id)
@@ -118,23 +130,11 @@ const TodoList = () => {
     })
   }
 
-  const showAll = () => {
-    setfilterTodos(todos)
-    setTabStatus('all')
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      addTodo();
+    }
   }
-
-  const showNotFinish = () => {
-    const notFinish = todos.filter((i)=> i.status === false)
-    setfilterTodos(notFinish)
-    setTabStatus('notFinish')
-  }
-
-  const showFinish = () => {
-    const finish = todos.filter((i)=> i.status === true)
-    setfilterTodos(finish)
-    setTabStatus('finish')
-  }
-
   return (
     <div id="todoListPage" className="bg-half">
       <nav>
@@ -159,7 +159,8 @@ const TodoList = () => {
               type="text"
               placeholder="請輸入待辦事項"
               value={newTodo}
-              onChange={(e) => setNewTodo(e.target.value)}
+              onChange={(e) => setNewTodo(e.target.value.trim())}
+              onKeyDown={handleKeyDown}
             />
             <a
               href="#"
@@ -178,7 +179,7 @@ const TodoList = () => {
                 <a href="#" className={tabStatus === 'all' ? 'active' : ''}
                  onClick={(e) => {
                   e.preventDefault();
-                  showAll()
+                  setTabStatus('all')
                 }}
                 >
                   全部
@@ -190,7 +191,7 @@ const TodoList = () => {
                   className={tabStatus  === 'notFinish'? 'active' : ''}
                   onClick={(e) => {
                     e.preventDefault();
-                    showNotFinish(e)
+                    setTabStatus('notFinish')
                   }}
                 >
                   待完成
@@ -202,7 +203,7 @@ const TodoList = () => {
                   className={tabStatus === 'finish'? 'active' : ''}
                   onClick={(e) => {
                     e.preventDefault();
-                    showFinish()
+                    setTabStatus('finish')
                   }}
                 >
                   已完成

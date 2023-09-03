@@ -468,6 +468,7 @@ nav ul a span {
   padding-bottom: 15px;
   color: #333333;
   line-height: 20.27px;
+  cursor: pointer; 
 }
 
 .todoList_list .todoList_items .todoList_input {
@@ -501,10 +502,12 @@ nav ul a span {
   font-size: 14px;
   color: #333333;
   opacity: 0;
+  
 }
 
 .todoList_list .todoList_items li:hover a {
   opacity: 1;
+  cursor: pointer; 
 }
 
 .todoList_list .todoList_statistics {
