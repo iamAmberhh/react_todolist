@@ -9,8 +9,8 @@ const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const [filterTodos, setFilterTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
-  const [finish, setFinish] = useState(0);
-  const [tabStatus, setTabStatus] = useState('all')
+  const [notFinish, setNotFinish] = useState(0);
+  const [tabStatus, setTabStatus] = useState('all');
   const token = document.cookie
     .split('; ')
     .find((row) => row.startsWith('token='))
@@ -22,21 +22,21 @@ const TodoList = () => {
   }, []);
 
   useEffect(() => {
-    const finishItem = todos.filter((i) => i.status === true)
-    setFinish(finishItem.length)
+    const notFinishItem = todos.filter((i) => i.status === false);
+    setNotFinish(notFinishItem.length);
   }, [todos]);
 
   useEffect(() => {
-    if(tabStatus === 'all'){
-      setFilterTodos(todos)
-    } else if (tabStatus === 'notFinish'){
-      const notFinish = todos.filter((i)=> i.status === false)
-        setFilterTodos(notFinish)
-    } else if (tabStatus === 'finish'){
-      const finish = todos.filter((i)=> i.status === true)
-        setFilterTodos(finish)
+    if (tabStatus === 'all') {
+      setFilterTodos(todos);
+    } else if (tabStatus === 'notFinish') {
+      const notFinish = todos.filter((i) => i.status === false);
+      setFilterTodos(notFinish);
+    } else if (tabStatus === 'finish') {
+      const finish = todos.filter((i) => i.status === true);
+      setFilterTodos(finish);
     }
-  }, [tabStatus,todos]);
+  }, [tabStatus, todos]);
 
   const checkAuth = async () => {
     try {
@@ -86,7 +86,7 @@ const TodoList = () => {
       );
       setNewTodo('');
       getTodos();
-      setTabStatus('all')
+      setTabStatus('all');
     } catch (error) {
       Swal.fire('失敗', error.response.data.message);
     }
@@ -96,7 +96,7 @@ const TodoList = () => {
     if (e.key === 'Enter') {
       addTodo();
     }
-  }
+  };
 
   const finishTodo = async (id) => {
     try {
@@ -130,14 +130,14 @@ const TodoList = () => {
 
   const clearFinishItem = async () => {
     todos.filter((i) => {
-      if(i.status) {
-        deleteTodo(i.id)
+      if (i.status) {
+        deleteTodo(i.id);
       }
-    })
-  }
+    });
+  };
 
   const handleLogout = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     Swal.fire({
       title: '確定要登出待辦嗎',
       showDenyButton: true,
@@ -148,15 +148,15 @@ const TodoList = () => {
         Swal.fire({
           title: '已登出',
           showConfirmButton: false,
-          timer: 500
-        })
+          timer: 500,
+        });
         navigate('/');
         document.cookie = `token=; SameSite=None; Secure`;
       } else if (result.isDenied) {
-        return
+        return;
       }
     });
-  }
+  };
 
   return (
     <div id="todoListPage" className="bg-half">
@@ -169,7 +169,9 @@ const TodoList = () => {
             <span>{nickname}的待辦</span>
           </li>
           <li>
-            <a href="#" onClick={handleLogout}>登出</a>
+            <a href="#" onClick={handleLogout}>
+              登出
+            </a>
           </li>
         </ul>
       </nav>
@@ -191,17 +193,19 @@ const TodoList = () => {
                 addTodo();
               }}
             >
-              <img src="/plus.png" alt="plus" />
+              <img src="/react_todolist/plus.png" alt="plus" />
             </a>
           </div>
           <div className="todoList_list">
             <ul className="todoList_tab">
               <li>
-                <a href="#" className={tabStatus === 'all' ? 'active' : ''}
-                 onClick={(e) => {
-                  e.preventDefault();
-                  setTabStatus('all')
-                }}
+                <a
+                  href="#"
+                  className={tabStatus === 'all' ? 'active' : ''}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setTabStatus('all');
+                  }}
                 >
                   全部
                 </a>
@@ -209,10 +213,10 @@ const TodoList = () => {
               <li>
                 <a
                   href="#"
-                  className={tabStatus  === 'notFinish'? 'active' : ''}
+                  className={tabStatus === 'notFinish' ? 'active' : ''}
                   onClick={(e) => {
                     e.preventDefault();
-                    setTabStatus('notFinish')
+                    setTabStatus('notFinish');
                   }}
                 >
                   待完成
@@ -221,10 +225,10 @@ const TodoList = () => {
               <li>
                 <a
                   href="#"
-                  className={tabStatus === 'finish'? 'active' : ''}
+                  className={tabStatus === 'finish' ? 'active' : ''}
                   onClick={(e) => {
                     e.preventDefault();
-                    setTabStatus('finish')
+                    setTabStatus('finish');
                   }}
                 >
                   已完成
@@ -233,6 +237,16 @@ const TodoList = () => {
             </ul>
             <div className="todoList_items">
               <ul className="todoList_item">
+                {filterTodos.length === 0 ? (
+                  <li
+                    className="todoList_label"
+                    style={{ justifyContent: 'space-around', cursor: 'auto' }}
+                  >
+                    目前尚無項目
+                  </li>
+                ) : (
+                  ''
+                )}
                 {filterTodos.map((todo) => {
                   return (
                     <li key={todo.id}>
@@ -259,11 +273,16 @@ const TodoList = () => {
                 })}
               </ul>
               <div className="todoList_statistics">
-                <p> {finish}個已完成項目</p>
-                <a href="#" onClick={(e)=> {
-                  e.preventDefault()
-                  clearFinishItem()
-                }}>清除已完成項目</a>
+                <p> {notFinish}個待完成項目</p>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    clearFinishItem();
+                  }}
+                >
+                  清除已完成項目
+                </a>
               </div>
             </div>
           </div>
