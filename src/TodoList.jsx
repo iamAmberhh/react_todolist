@@ -69,7 +69,7 @@ const TodoList = () => {
 
   const addTodo = async () => {
     if (!newTodo) {
-      Swal.fire('新增失敗', '請輸入代辦', 'warning');
+      Swal.fire('新增失敗', '請輸入代辦');
       return;
     }
     try {
