@@ -25,10 +25,13 @@ const Login = () => {
       const res = await axios.post(`${VITE_APP_HOST}/users/sign_in`, loginData);
       const { data } = await res;
       document.cookie = `token=${data.token}; SameSite=None; Secure`;
-      Swal.fire('登入成功', '即將進入待辦清單').then(() => {
+      Swal.fire({
+        title: '登入成功',
+        showConfirmButton: false,
+        timer: 500
+      })
         setIsLoading(false);
         navigate('/todo');
-      });
     } catch (error) {
       Swal.fire('登入失敗', error.response.data.message);
       setIsLoading(false);

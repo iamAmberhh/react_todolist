@@ -92,6 +92,12 @@ const TodoList = () => {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      addTodo();
+    }
+  }
+
   const finishTodo = async (id) => {
     try {
       const res = await axios.patch(
@@ -130,11 +136,28 @@ const TodoList = () => {
     })
   }
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      addTodo();
-    }
+  const handleLogout = (e) => {
+    e.preventDefault()
+    Swal.fire({
+      title: '確定要登出待辦嗎',
+      showDenyButton: true,
+      confirmButtonText: '確定',
+      denyButtonText: '取消',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: '已登出',
+          showConfirmButton: false,
+          timer: 500
+        })
+        navigate('/');
+        document.cookie = `token=; SameSite=None; Secure`;
+      } else if (result.isDenied) {
+        return
+      }
+    });
   }
+
   return (
     <div id="todoListPage" className="bg-half">
       <nav>
@@ -143,12 +166,10 @@ const TodoList = () => {
         </h1>
         <ul>
           <li className="todo_sm">
-            <a href="#">
-              <span>{nickname}的代辦</span>
-            </a>
+            <span>{nickname}的待辦</span>
           </li>
           <li>
-            <a href="#loginPage">登出</a>
+            <a href="#" onClick={handleLogout}>登出</a>
           </li>
         </ul>
       </nav>

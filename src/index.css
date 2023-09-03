@@ -88,6 +88,12 @@ img {
   height: 100vh;
 }
 
+.center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .bg-yellow {
   background-color: #FFD370;
 }
