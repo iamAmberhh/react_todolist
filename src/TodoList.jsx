@@ -266,7 +266,7 @@ const TodoList = () => {
                           deleteTodo(todo.id);
                         }}
                       >
-                        <img src="/delete.jpg" alt="delete" />
+                        <img src="/react_todolist/delete.jpg" alt="delete" />
                       </a>
                     </li>
                   );
